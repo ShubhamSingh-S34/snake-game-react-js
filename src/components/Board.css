@@ -1,0 +1,29 @@
+.boardContainer {
+    /* background-color: bisque; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100Vh;
+    flex-direction: column;
+}
+
+.score {
+    font-size: 35px;
+    padding-bottom: 12px;
+}
+
+.board {
+    background-color: aqua;
+
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    min-width: 35px;
+    min-height: 35px;
+    border: 1px solid black;
+
+}
