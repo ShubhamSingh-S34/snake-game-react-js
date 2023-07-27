@@ -49,29 +49,40 @@ function Board() {
             };
         }
     };
-
+    const isOutOfBounds = (coords, board) => {
+        const { x, y } = coords;
+        if (x < 0 || y < 0) return true;
+        if (x > board.length || y > board[0].length) return true;
+        return false;
+    };
     const moveSnake = () => {
         // next head coordinates 
         const tailOfSnakeCoords = snakeArr[snakeArr.length - 1];
         const nextHeadCoords = getCoordsInDirection(snakeArr[0], direction);
+        if (isOutOfBounds(nextHeadCoords, board)) {
+            setGameOver(true);
+            return;
+        }
         // move snake array to next head coordinates
-        console.log(direction);
         const tailValue = getValueFromCoordinates(tailOfSnakeCoords);
         const nextHeadValue = getValueFromCoordinates(nextHeadCoords);
         const newSnakeSet = new Set([...snakeSet]);
         newSnakeSet.delete(tailValue);
         newSnakeSet.add(nextHeadValue);
         setSnakeSet(newSnakeSet);
-        let newSnakeArr = [...snakeArr];
-        newSnakeArr[0] = nextHeadCoords;
+
+        const newSnakeArr = [nextHeadCoords, ...snakeArr];
+        newSnakeArr.pop();
         setSnakeArr(newSnakeArr);
+        console.log(snakeArr);
     }
     const [board, setBoard] = useState(createBoard(boardSize))
     const [score, setScore] = useState(0);
-    const [snakeArr, setSnakeArr] = useState([{ x: 5, y: 3 }]);
-    const [snakeSet, setSnakeSet] = useState(new Set([getValueFromCoordinates(snakeArr[0])]));
+    const [snakeArr, setSnakeArr] = useState([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
+    const [snakeSet, setSnakeSet] = useState(new Set([51, 50, 49]));
     const [direction, setDirection] = useState("RIGHT")
     const [pause, setPause] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
     useEffect(() => {
         // console.log(direction, "First Render");
         window.addEventListener("keydown", (e) => {
@@ -89,6 +100,21 @@ function Board() {
             moveSnake();
         }
     }, 500);
+    if (gameOver) {
+        return (
+            <div>
+                <p>Game-Over Bitch!</p>
+                <button className='button' onClick={() => {
+                    setGameOver(false);
+                    setBoard(createBoard(boardSize));
+                    setScore(0);
+                    setSnakeArr([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
+                    setDirection("RIGHT");
+                    setSnakeSet(new Set([51, 50, 49]));
+                }}>Restart</button>
+            </div>
+        )
+    }
     return (
         <>
             <div className='boardContainer'>
