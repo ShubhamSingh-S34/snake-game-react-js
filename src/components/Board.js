@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './Board.css'
 import { useInterval } from '../hooks/useInterval'
-
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 function Board() {
-
+    const eatingAudio = new Audio(require('../media/eating.mp3'))
+    const gameOverAudio = new Audio(require('../media/gameOver.mp3'))
     const boardSize = 12
     const createBoard = (boardSize) => {
         let board = [];
@@ -67,6 +68,7 @@ function Board() {
         else return foodCell
     }
     const handleGameOver = (message) => {
+        // gameOverAudio.play();
         setGameOverMessage(message);
         setGameOver(true);
         return;
@@ -77,6 +79,7 @@ function Board() {
         const nextHeadCoords = getCoordsInDirection(snakeArr[0], direction);
         const nextHeadValue = getValueFromCoordinates(nextHeadCoords);
         if (isOutOfBounds(nextHeadCoords, board)) {
+
             handleGameOver("OOPS !!! You Went Outside the boundary");
             return;
         }
@@ -86,6 +89,7 @@ function Board() {
         }
         if (nextHeadCoords.x == foodCell.x && nextHeadCoords.y == foodCell.y) {
             // Grow Snake
+            // eatingAudio.play();
             setScore((score) => score + 10);
             const newSnakeSet = new Set([...snakeSet]);
             newSnakeSet.add(nextHeadValue);
@@ -137,6 +141,7 @@ function Board() {
     const [pause, setPause] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [gameOverMessage, setGameOverMessage] = useState("");
+    const [gameSpeed, setGameSpeed] = useState(500);
     useEffect(() => {
         window.addEventListener("keydown", handleDirectionChange)
     }, [])
@@ -145,14 +150,14 @@ function Board() {
         if (!pause) {
             moveSnake();
         }
-    }, 300);
+    }, gameSpeed);
     if (gameOver) {
         return (
-            <div>
-                <p>Game-Over Bitch!</p>
-                <h1>{score} </h1>
-                <h3>{gameOverMessage}</h3>
-                <button className='button' onClick={() => {
+            <div className='gameOverContainer'>
+                <p className='gameOverText'>Game-Over Bitch!</p>
+                <h1 className='gameOverScore'>{score} </h1>
+                <h3 className='gameOverMessage'>{gameOverMessage}</h3>
+                <button className='restartButton' onClick={() => {
                     setGameOver(false);
                     setBoard(createBoard(boardSize));
                     setScore(0);
@@ -168,10 +173,17 @@ function Board() {
             <div className='boardContainer'>
                 <div className='upperPart'>
                     <div className='score'>{score}</div>
+                    <div className='speed'>
+                        <FontAwesomeIcon icon={faPlus} className='fa-lg' color='#FFD2D7'
+                            onClick={() => { setGameSpeed((prev) => prev - 100) }} />
+                        <p className='speedText'>speed</p>
+                        <FontAwesomeIcon icon={faMinus} className='fa-lg' color='#FFD2D7'
+                            onClick={() => { setGameSpeed((prev) => prev + 100) }} />
+                    </div>
                     <div className='buttonContainer'>
                         <button
                             onClick={() => { setPause((prevState) => !prevState) }}
-                            className='button'
+                            className='play-pause-button'
                         >
                             {!pause ? "pause" : "start"}
                         </button>
