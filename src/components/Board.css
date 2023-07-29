@@ -93,6 +93,36 @@
     background-color: #FFD2D7
 }
 
+.gameStartContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100Vh;
+    flex-direction: column;
+    margin: auto;
+    width: 100vh;
+}
+
+.gameStartButton {
+    background-color: #5c469b;
+    border: none;
+    color: #FFD2D7;
+    padding: 8px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 7px;
+    border-radius: 35px;
+    cursor: pointer;
+}
+
+
+.snakeImg {
+    max-width: 200px;
+    max-height: 200px;
+}
+
 .gameOverContainer {
     display: flex;
     justify-content: center;
@@ -138,4 +168,9 @@
     font-size: 16px;
     margin-top: 7px;
     border-radius: 35px;
+    cursor: pointer;
+}
+
+.fullscreen-enabled .my-component {
+    background: transparent;
 }

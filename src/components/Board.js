@@ -3,6 +3,7 @@ import './Board.css'
 import { useInterval } from '../hooks/useInterval'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+// import "../media/snakeImg.png" 
 
 function Board() {
     const eatingAudio = new Audio(require('../media/eating.mp3'))
@@ -112,34 +113,55 @@ function Board() {
         setSnakeArr(newSnakeArr);
     }
     const handleDirectionChange = (e) => {
-        // console.log("direction Ref -> ", directionRef);
-        if (e.key === 'ArrowUp' && directionRef.current != "DOWN") {
-            setDirection("UP");
-            directionRef.current = "UP";
-        }
-        if (e.key === 'ArrowRight' && directionRef.current != "LEFT") {
-            setDirection("RIGHT");
-            directionRef.current = "RIGHT";
-        }
-        if (e.key === 'ArrowDown' && directionRef.current != "UP") {
-            setDirection("DOWN");
-            directionRef.current = "DOWN";
-        }
-        if (e.key === 'ArrowLeft' && directionRef.current != "RIGHT") {
-            setDirection("LEFT");
-            directionRef.current = "LEFT";
+        console.log("direction Ref -> ", directionRef);
+        console.log("directionChangeAllowed -> ", directionChangeAllowed);
+        if (directionChangeAllowed.current) {
+
+            if (e.key === 'ArrowUp' && directionRef.current != "DOWN" && directionChangeAllowed.current) {
+                setDirection("UP");
+                directionRef.current = "UP";
+            }
+            if (e.key === 'ArrowRight' && directionRef.current != "LEFT" && directionChangeAllowed.current) {
+                setDirection("RIGHT");
+                directionRef.current = "RIGHT";
+            }
+            if (e.key === 'ArrowDown' && directionRef.current != "UP" && directionChangeAllowed.current) {
+                setDirection("DOWN");
+                directionRef.current = "DOWN";
+            }
+            if (e.key === 'ArrowLeft' && directionRef.current != "RIGHT" && directionChangeAllowed.current) {
+                setDirection("LEFT");
+                directionRef.current = "LEFT";
+            }
+            directionChangeAllowed.current = false;
+            setTimeout(() => { directionChangeAllowed.current = true }, 100);
         }
     }
-
+    const handleRestart = () => {
+        setBoard(createBoard(boardSize));
+        setScore(0);
+        setSnakeArr([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
+        setSnakeSet(new Set([51, 50, 49]));
+        setDirection("RIGHT");
+        directionRef.current = "RIGHT";
+        setFoodCell(generateFoodCells(1, boardSize));
+        setPause(false);
+        setGameOver(false);
+        setGameOverMessage("");
+        setGameSpeed(500);
+        return;
+    }
     const [board, setBoard] = useState(createBoard(boardSize))
     const [score, setScore] = useState(0);
     const [snakeArr, setSnakeArr] = useState([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
     const [snakeSet, setSnakeSet] = useState(new Set([51, 50, 49]));
     const [direction, setDirection] = useState("RIGHT");
+    const directionChangeAllowed = useRef(true);
     const directionRef = useRef(direction);
     const [foodCell, setFoodCell] = useState(generateFoodCells(1, boardSize));
     const [pause, setPause] = useState(false);
     const [gameOver, setGameOver] = useState(false);
+    const [gameStart, setGameStart] = useState(true);
     const [gameOverMessage, setGameOverMessage] = useState("");
     const [gameSpeed, setGameSpeed] = useState(500);
     useEffect(() => {
@@ -147,23 +169,31 @@ function Board() {
     }, [])
 
     useInterval(() => {
-        if (!pause) {
+        if (!gameStart && !pause) {
             moveSnake();
         }
     }, gameSpeed);
+    if (gameStart) {
+        return (
+            <div className='gameStartContainer'>
+                <div className='snakeImgContainer'>
+                    <img src={require("../media/snakeImgGif.gif")} className='snakeImg' />
+                </div>
+                <button className='gameStartButton' onClick={() => {
+                    setGameStart(false);
+                }}>Start Snake </button>
+            </div>
+        )
+    }
     if (gameOver) {
         return (
             <div className='gameOverContainer'>
-                <p className='gameOverText'>Game-Over Bitch!</p>
+                <p className='gameOverText'>Game-Over</p>
+                <img src={require("../media/gameOverSnakeImg.png")} className='snakeImg' />
                 <h1 className='gameOverScore'>{score} </h1>
                 <h3 className='gameOverMessage'>{gameOverMessage}</h3>
                 <button className='restartButton' onClick={() => {
-                    setGameOver(false);
-                    setBoard(createBoard(boardSize));
-                    setScore(0);
-                    setSnakeArr([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
-                    setDirection("RIGHT");
-                    setSnakeSet(new Set([51, 50, 49]));
+                    handleRestart();
                 }}>Restart</button>
             </div>
         )
