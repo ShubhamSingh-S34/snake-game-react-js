@@ -24,15 +24,33 @@
     /* border-radius: 35px; */
 }
 
+
+
 .boardContainer {
     /* background-color: bisque; */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100Vh;
+    height: 100Vh;
     flex-direction: column;
     margin: auto;
-    width: 100vh;
+    min-width: 100vh;
+    /* background-color: aqua; */
+}
+
+.highScoreContainer {
+    /* background-color: rgba(212, 77, 77, 0.966); */
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+}
+
+.highScoreText {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 30px;
+    color: #FFD2D7;
+    margin: 0%;
+    padding-right: 100px;
 }
 
 .play-pause-button {
@@ -54,9 +72,6 @@
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 20px;
     color: #FFD2D7;
-    /* border-left: #322653 solid 1px; */
-    /* background-color: red; */
-    /* padding: 0%; */
     margin: 0%;
 }
 

@@ -113,8 +113,6 @@ function Board() {
         setSnakeArr(newSnakeArr);
     }
     const handleDirectionChange = (e) => {
-        console.log("direction Ref -> ", directionRef);
-        console.log("directionChangeAllowed -> ", directionChangeAllowed);
         if (directionChangeAllowed.current) {
 
             if (e.key === 'ArrowUp' && directionRef.current != "DOWN" && directionChangeAllowed.current) {
@@ -151,6 +149,36 @@ function Board() {
         setGameSpeed(500);
         return;
     }
+    function setCookie(cname, cvalue) {
+        const d = new Date();
+        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    let HighScoreVariable;
+    const getHighScoreFunction = () => {
+        const cookie = getCookie("high-socre");
+        if (cookie == "") {
+            HighScoreVariable = parseInt(0);
+        }
+        else HighScoreVariable = parseInt(cookie);
+    }
+    getHighScoreFunction();
     const [board, setBoard] = useState(createBoard(boardSize))
     const [score, setScore] = useState(0);
     const [snakeArr, setSnakeArr] = useState([{ x: 5, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 1 }]);
@@ -164,6 +192,8 @@ function Board() {
     const [gameStart, setGameStart] = useState(true);
     const [gameOverMessage, setGameOverMessage] = useState("");
     const [gameSpeed, setGameSpeed] = useState(500);
+    const [highScore, setHighScore] = useState(parseInt(HighScoreVariable));
+
     useEffect(() => {
         window.addEventListener("keydown", handleDirectionChange)
     }, [])
@@ -186,21 +216,46 @@ function Board() {
         )
     }
     if (gameOver) {
-        return (
-            <div className='gameOverContainer'>
-                <p className='gameOverText'>Game-Over</p>
-                <img src={require("../media/gameOverSnakeImg.png")} className='snakeImg' />
-                <h1 className='gameOverScore'>{score} </h1>
-                <h3 className='gameOverMessage'>{gameOverMessage}</h3>
-                <button className='restartButton' onClick={() => {
-                    handleRestart();
-                }}>Restart</button>
-            </div>
-        )
+        if (score >= highScore) {
+            setCookie("high-socre", score);
+            if (score > highScore) {
+                setHighScore(score);
+            }
+            console.log("New High score !!!");
+            console.log(highScore);
+            return <>
+                <div className='gameOverContainer'>
+                    <p className='gameOverText'> Game-Over</p>
+                    <img src={require("../media/happySnakeImg.png")} className='snakeImg' />
+                    <h1 className='gameOverScore'>{score} </h1>
+                    <h3 className='gameOverMessage'>Congratulations ! You have set a new High-Score !</h3>
+                    <button className='restartButton' onClick={() => {
+                        handleRestart();
+                    }}>Restart</button>
+                </div>
+            </>
+
+        }
+        else {
+            return (
+                <div className='gameOverContainer'>
+                    <p className='gameOverText'>Game-Over</p>
+                    <img src={require("../media/gameOverSnakeImg.png")} className='snakeImg' />
+                    <h1 className='gameOverScore'>{score} </h1>
+                    <h3 className='gameOverMessage'>{gameOverMessage}</h3>
+                    <button className='restartButton' onClick={() => {
+                        handleRestart();
+                    }}>Restart</button>
+                </div>
+            )
+        }
     }
     return (
         <>
             <div className='boardContainer'>
+                <div className='highScoreContainer'>
+                    <p className='highScoreText'>Highest : {highScore}</p>
+                </div>
                 <div className='upperPart'>
                     <div className='score'>{score}</div>
                     <div className='speed'>
